@@ -50,7 +50,7 @@ El flujo de trabajo enruta las notificaciones dinámicamente y registra datos es
 ## 4. Arquitectura de Mermaid Diagrama
 
 ```mermaid
-diagrama de flujo
+flowchart TD
 
 A[Ingreso por Webhook] --> B[Validación de datos]
 B --> C[Obtener configuración de Google Sheets]

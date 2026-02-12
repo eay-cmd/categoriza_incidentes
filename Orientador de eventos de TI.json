@@ -1,0 +1,744 @@
+{
+  "name": "Orientador de eventos de TI",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "incidentes-ti",
+        "options": {}
+      },
+      "name": "Webhook - Incidentes TI",
+      "type": "n8n-nodes-base.webhook",
+      "position": [
+        -688,
+        -80
+      ],
+      "id": "a002ca5d-3eb2-4cf4-97c2-fcb252d2b927",
+      "typeVersion": 2.1,
+      "webhookId": "13bf5e90-44f7-4568-9216-fb560980164d"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5a9b8fe1-b35d-4a5c-bf25-f122f20a2cdb",
+              "name": "Origen",
+              "value": "={{ $json.body.origen }}",
+              "type": "string"
+            },
+            {
+              "id": "0530d513-3185-4a7e-95d8-029e59ec5215",
+              "name": "Usuario",
+              "value": "={{ $json.body.usuario }}",
+              "type": "string"
+            },
+            {
+              "id": "afe001de-53a0-432b-a0d3-6f7a3878fe8f",
+              "name": "Titulo",
+              "value": "={{ $json.body.titulo }}",
+              "type": "string"
+            },
+            {
+              "id": "d8a7787d-f7b2-40b6-b5e4-e51e8634a9e2",
+              "name": "Descripcion",
+              "value": "={{ $json.body.descripcion }}",
+              "type": "string"
+            },
+            {
+              "id": "680113e7-0ae6-44c3-bd0e-0bf2097dec3e",
+              "name": "Tipo_evento",
+              "value": "={{ $json.body.tipo_evento }}",
+              "type": "string"
+            },
+            {
+              "id": "74f203cf-022b-4a6f-a518-36fbca4c63e8",
+              "name": "Sistemas",
+              "value": "={{ $json.body.sistemas }}",
+              "type": "string"
+            },
+            {
+              "id": "6c76e9b1-4f44-43e4-b03f-f9febc9c2a69",
+              "name": "Fecha",
+              "value": "={{ $json.body.timestamp }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Normalizar Payload",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -480,
+        -80
+      ],
+      "id": "3f88e859-29f8-4468-b85c-3c19f6472afa",
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "jsCode": "// Obtener todos los items (filas)\nconst items = $input.all();\n\n// Crear arrays separados filtrando los valores vacíos o nulos\nconst sistemasCriticos = items.map(item => item.json['Sistemas criticos']).filter(val => val);\nconst horariosSensibles= items.map(item => item.json['Horarios sensibles']).filter(val => val);\nconst palabraClave = items.map(item => item.json['Palabra clave']).filter(val => val);\nconst listaRoles= items.map(item => item.json['Rol']).filter(val => val);\n\n\n// Retornar un solo objeto con las 3 variables listas para usar\nreturn {\n  json: {\n    sistemasCriticos: sistemasCriticos,\n    horariosSensibles: horariosSensibles,\n    palabraClave: palabraClave,\n    listaRoles: listaRoles\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        176,
+        -96
+      ],
+      "id": "c8b18d2e-6b87-4111-b2fd-3eb10d561aa5",
+      "name": "Reglas"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "c01785ad-c963-41b6-a958-5ffd40e63ae3",
+              "leftValue": "={{ $json.Usuario }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "1b5322e5-8d77-446c-8c9d-9f7360db44f2",
+              "leftValue": "={{ $json.Titulo }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "55f3307a-2338-43c2-996c-c9518c321c3d",
+              "leftValue": "={{ $json.Descripcion }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -288,
+        -80
+      ],
+      "id": "18b469be-4534-4365-9845-cfda862ebe46",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1ITP0lF6IPmhRJj2DKjbbQ_ETnCK7wByvFnENfLajnnw",
+          "mode": "list",
+          "cachedResultName": "Log mesa de ayuda",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ITP0lF6IPmhRJj2DKjbbQ_ETnCK7wByvFnENfLajnnw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ITP0lF6IPmhRJj2DKjbbQ_ETnCK7wByvFnENfLajnnw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Remitente": "\"Automático\"",
+            "Menaje": "\"No se tiene los campos completos\"",
+            "Fecha": "={{ $('Normalizar Payload').item.json.Fecha }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Remitente",
+              "displayName": "Remitente",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Menaje",
+              "displayName": "Menaje",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Fecha",
+              "displayName": "Fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -16,
+        128
+      ],
+      "id": "4fe68e2d-9073-4501-b849-cf1c325b7417",
+      "name": "Log de error",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "oiIGEZlhPg7msGyZ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=revisa la información proporcionada en el título del mensaje:{{ $json.Titulo }}\n, el mensaje: {{ $json.Descripcion }} y los posibles sistemas afectados: {{ $json.Sistemas }}",
+        "options": {
+          "systemMessage": "=Asume el Rol de : {{ $json.listaRoles }} y evalúa el incidente considerando:\n- severidad técnica\n- impacto en el negocio\n- urgencia temporal\n\nUsa la lista de:\n- Sistemas críticos: {{ $json.sistemasCriticos }}\n- Palabras clave: {{ $json.palabraClave }}\n- Horarios sensibles: {{ $json.horariosSensibles }}\n\n### FORMATO DE SALIDA (ESTRICTO) \nTu respuesta debe ser UNICAMENTE en JSON válido.\nNo incluyas texto introductorio ni markdown (```json).  \n\nEstructura requerida:\n{\n  \"severidad\": (Critico | Alto | Medio | Bajo)\n  \"impacto_negocio\": (Alto | Medio | Bajo)\n  \"urgencia\" \n  \"prioridad_final\" (Critico | Alto | Medio | Bajo)\n  \"justificacion_clara\": Descripción sencilla pero clara de la justificación\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        560,
+        -96
+      ],
+      "id": "fdc58709-0e32-40f0-89b9-9ffbfa2ca5dd",
+      "name": "AI Agent",
+      "alwaysOutputData": false,
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        464,
+        176
+      ],
+      "id": "fc9bb4d3-90c2-42ad-b04d-5df46fcafad6",
+      "name": "DeepSeek Chat Model",
+      "credentials": {
+        "deepSeekApi": {
+          "id": "G9HpaL1QcfIYZbJt",
+          "name": "DeepSeek account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.Usuario }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        656,
+        128
+      ],
+      "id": "63901de9-2a8e-410f-a23f-344934cef9e8",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1wWrY8zB-h-tNs6bMCyt2hk-iZ02yLEfOQFrvgC9bJ2Q",
+          "mode": "list",
+          "cachedResultName": "Mesa de ayuda",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wWrY8zB-h-tNs6bMCyt2hk-iZ02yLEfOQFrvgC9bJ2Q/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wWrY8zB-h-tNs6bMCyt2hk-iZ02yLEfOQFrvgC9bJ2Q/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -16,
+        -96
+      ],
+      "id": "dc15f880-f88c-418f-a6a7-fe00ddc090a5",
+      "name": "Parametros",
+      "executeOnce": false,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "oiIGEZlhPg7msGyZ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "12ffbd39-5365-4f19-9fc0-0627d24f5d8e",
+              "name": "sistemasCriticos",
+              "value": "={{ $json.sistemasCriticos }}",
+              "type": "array"
+            },
+            {
+              "id": "9f98f437-f5bd-4954-bb7a-99f9ad35abfd",
+              "name": "horariosSensibles",
+              "value": "={{ $json.horariosSensibles }}",
+              "type": "array"
+            },
+            {
+              "id": "69c32af1-746f-447d-833b-6526c5e73740",
+              "name": "palabraClave",
+              "value": "={{ $json.palabraClave }}",
+              "type": "array"
+            },
+            {
+              "id": "b554fb83-c5e6-4acf-acbb-0b53d0d8616b",
+              "name": "listaRoles",
+              "value": "={{ $json.listaRoles }}",
+              "type": "array"
+            },
+            {
+              "id": "b4e92a94-6238-40ae-8464-dae631953d62",
+              "name": "Origen",
+              "value": "={{ $('Normalizar Payload').first().json.Origen }}",
+              "type": "string"
+            },
+            {
+              "id": "bb3b6add-2545-4446-bfe3-a17ea8ed40d4",
+              "name": "Usuario",
+              "value": "={{ $('Normalizar Payload').first().json.Usuario }}",
+              "type": "string"
+            },
+            {
+              "id": "cc2ac3a5-db63-470d-b550-c340ca563a57",
+              "name": "Titulo",
+              "value": "={{ $('Normalizar Payload').first().json.Titulo }}",
+              "type": "string"
+            },
+            {
+              "id": "f27bfe68-04f4-45dd-96e6-5ad253e3996e",
+              "name": "Descripcion",
+              "value": "={{ $('Normalizar Payload').first().json.Descripcion }}",
+              "type": "string"
+            },
+            {
+              "id": "4568029f-568e-4270-a5a0-8aa4e36258ab",
+              "name": "Sistemas",
+              "value": "={{ $('Normalizar Payload').first().json.Sistemas }}",
+              "type": "string"
+            },
+            {
+              "id": "80230fd7-b88e-4ca9-9c75-0fff260b1502",
+              "name": "Fecha",
+              "value": "={{ $('Normalizar Payload').first().json.Fecha }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        368,
+        -96
+      ],
+      "id": "830ded62-d8ba-4457-bc02-d3c0f213eeaf",
+      "name": "Campos completos"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.prioridad_final }}",
+                    "rightValue": "Critico",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "2fc7cb06-2294-4420-ada7-de9fa059c7b0"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "a90a6e30-ac4b-412b-86d9-e0f676b74cab",
+                    "leftValue": "={{ $json.prioridad_final }}",
+                    "rightValue": "Alto",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "0a48a668-a234-4b20-a803-2d73e1ce064e",
+                    "leftValue": "={{ $json.prioridad_final }}",
+                    "rightValue": "Critico, Alto",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notContains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        1072,
+        -96
+      ],
+      "id": "bad0bc4a-ad26-4ba0-8f5d-6242fc3d37de",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "jsCode": "const aiResponse = $input.first().json.output;\n\n// Limpiar markdown code blocks si existen\nlet cleanedResponse = aiResponse\n  .replace(/```json\\n?/g, '')\n  .replace(/```\\n?/g, '')\n  .trim();\n\n// Parsear el JSON\nconst parsedData = JSON.parse(cleanedResponse);\n\n// Combinar con datos originales si es necesario\nreturn {\n  json: {\n    ...parsedData,\n    origen: $('Campos completos').first().json.Origen,\n    usuario: $('Campos completos').first().json.Usuario,\n    titulo: $('Campos completos').first().json.Titulo,\n    descripcion: $('Campos completos').first().json.Descripcion,\n    fecha: $('Campos completos').first().json.Fecha\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        864,
+        -96
+      ],
+      "id": "c4b19e86-a592-4e4d-a0e0-6f2ed7a36370",
+      "name": "Salida"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1ITP0lF6IPmhRJj2DKjbbQ_ETnCK7wByvFnENfLajnnw",
+          "mode": "list",
+          "cachedResultName": "Log mesa de ayuda",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ITP0lF6IPmhRJj2DKjbbQ_ETnCK7wByvFnENfLajnnw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ITP0lF6IPmhRJj2DKjbbQ_ETnCK7wByvFnENfLajnnw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Remitente": "={{ $('Salida').item.json.usuario }}",
+            "Menaje": "={{ $('Salida').item.json.descripcion }}",
+            "Fecha": "={{ $('Salida').item.json.fecha }}",
+            "Origen": "={{ $('Salida').item.json.origen }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Remitente",
+              "displayName": "Remitente",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Menaje",
+              "displayName": "Menaje",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Fecha",
+              "displayName": "Fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Origen",
+              "displayName": "Origen",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1264,
+        80
+      ],
+      "id": "cc0258f1-3836-4c92-8a49-5cccd5b01372",
+      "name": "Registrar log",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "oiIGEZlhPg7msGyZ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0AE6PH6X6J",
+          "mode": "list",
+          "cachedResultName": "todo-test"
+        },
+        "text": "=Atención!!!.....Se ha detectado un incidente crítico. \n\n{{ $json.justificacion_clara }}\n\nReportado por: {{ $json.usuario }}\nDesde: {{ $json.origen }}\nTitulo: {{ $json.titulo }}\n{{ $json.descripcion }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.4,
+      "position": [
+        1280,
+        -208
+      ],
+      "id": "074e1582-3490-40b7-830c-c7215163d82a",
+      "name": "Critico",
+      "webhookId": "8ad9f2bb-c8ea-409b-a7dd-61af76855b21",
+      "credentials": {
+        "slackApi": {
+          "id": "3NhFUcRyZ0dU6eLw",
+          "name": "Slack account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook - Incidentes TI": {
+      "main": [
+        [
+          {
+            "node": "Normalizar Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalizar Payload": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Parametros",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Log de error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reglas": {
+      "main": [
+        [
+          {
+            "node": "Campos completos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Salida",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parametros": {
+      "main": [
+        [
+          {
+            "node": "Reglas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Campos completos": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Critico",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [],
+        [
+          {
+            "node": "Registrar log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Salida": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "fbb32da8-15a3-49bc-b4ee-be7327cfbc92",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e9a615ff4ea862f1a3ed445480172f2212499f655fca15f1cacf2de19c6363aa"
+  },
+  "id": "4UBoQd3SyCZ98hIeIOugF",
+  "tags": []
+}

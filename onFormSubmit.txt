@@ -1,0 +1,32 @@
+function onFormSubmit(e) {
+  const responses = e.response.getItemResponses();
+
+  const data = {};
+
+  responses.forEach(r => {
+    const question = r.getItem().getTitle();
+    const answer = r.getResponse();
+    data[question] = answer;
+  });
+
+  const payload = {
+    origen: "google_form",
+    usuario: data["Nombre"] || "No especificado",
+    tipo_evento: data["Tipo de Evento"] || "No especificado",
+    titulo: data["Título Resumido del Evento"] || "",
+    descripcion: data["Descripción Detallada del Evento"] || "",
+    sistemas: Array.isArray(data["Sistemas"])
+      ? data["Sistemas"].join(", ")
+      : data["Sistemas"] || "No especificado",
+    timestamp: new Date().toISOString()
+  };
+
+  Logger.log(payload); // para validación
+
+  UrlFetchApp.fetch("https://n8n.srv1096354.hstgr.cloud/webhook-test/incidentes-ti", {
+    method: "post",
+    contentType: "application/json",
+    payload: JSON.stringify(payload),
+    muteHttpExceptions: true
+  });
+}
